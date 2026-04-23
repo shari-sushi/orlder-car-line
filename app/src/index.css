@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+html {
+  scroll-padding-top: 5.5rem; /* fixed header height (h-14 + h-8 = 88px) */
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #f3f4f6;
+}
+
+button {
+  cursor: pointer;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+.flag-selector {
+  animation: pop-in 150ms ease-out;
+}

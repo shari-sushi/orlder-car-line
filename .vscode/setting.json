@@ -1,0 +1,8 @@
+{
+  "cSpell.words": [],
+  "cSpell.ignorePaths": [],
+  "[markdown]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
