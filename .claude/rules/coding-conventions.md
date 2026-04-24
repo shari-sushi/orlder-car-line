@@ -26,8 +26,6 @@ function handler(_event: MouseEvent) { ... }
 
 `any` は使わない。型が不明な場合は `unknown` を使い、明示的に型を絞り込む。
 
----
-
 ## React
 
 ### イベントハンドラの命名
@@ -49,8 +47,6 @@ src/context/imageGallery/
   useImageGallery.ts        # useContext ラッパー hook（関数のみ export）
   ImageGallery.tsx          # Context を使う UI コンポーネント（あれば）
 ```
-
----
 
 ## その他
 
