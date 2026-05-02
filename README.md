@@ -30,12 +30,12 @@
 
 ## 技術スタック
 
-| 項目           | 選定          | 備考                                              |
-| -------------- | ------------- | ------------------------------------------------- |
-| 言語           | Go            | 確定                                              |
-| フレームワーク | 未定          | 入社先に確認中 → [比較メモ](docs/go-framework.md) |
-| セッション管理 | Redis         | TTL 付き → [設計メモ](docs/redis-session.md)      |
-| LINE           | Messaging API | → [概要メモ](docs/line-messaging-api.md)          |
+| 項目           | 選定          | 備考                                         |
+| -------------- | ------------- | -------------------------------------------- |
+| 言語           | Go            | 確定                                         |
+| フレームワーク | Gin           | → [比較メモ](docs/go-framework.md)           |
+| セッション管理 | Redis         | TTL 付き → [設計メモ](docs/redis-session.md) |
+| LINE           | Messaging API | → [概要メモ](docs/line-messaging-api.md)     |
 
 ## ディレクトリ構成
 
@@ -62,7 +62,7 @@
 
 - [x] 仕様決め
 - [x] 技術スタック選定（フレームワーク以外）
-- [ ] フレームワーク確認（入社先へ確認中）
+- [x] フレームワーク確認（Gin でいいや）
 - [ ] LINE Developers アカウント作成
 - [ ] LINE 公式アカウント作成・Messaging API 有効化
 - [ ] Channel Secret / Channel Access Token 取得

@@ -54,7 +54,6 @@ r.Post("/webhook", handleWebhook)
 http.ListenAndServe(":8080", r)
 ```
 
-## 選定状況
+## 選定結果
 
-- [ ] 入社先に確認
-- [ ] 選定決定 → このファイルを更新
+**Gin** を採用。
