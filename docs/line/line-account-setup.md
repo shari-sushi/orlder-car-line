@@ -20,6 +20,7 @@
 ## 4. Messaging API チャネルを作成する
 
 ※2026/04時点
+
 > INE DevelopersコンソールからMessaging APIチャネルを直接作成することはできなくなりました。
 > Messaging APIチャネルを作成するには、以下の［LINE公式アカウントを作成する］ボタンからLINE公式アカウントを作成した後、LINE Official Account Manager上でMessaging APIの利用を有効にしてください。
 
@@ -61,6 +62,16 @@ Messaging API チャネル作成後は [LINE ビジネスマネージャー](htt
 LINE_CHANNEL_SECRET=<Channel Secret>
 LINE_CHANNEL_ACCESS_TOKEN=<Channel Access Token>
 ```
+
+## 6. 自動応答を無効にする
+
+デフォルトでは自動応答メッセージが有効になっており、Webhook より優先されてしまう。
+
+1. [LINE Official Account Manager](https://manager.line.biz/) を開く
+2. 対象アカウント → 「応答設定」
+3. 「応答モード」を **「Bot」** に変更
+4. 「自動応答メッセージ」を **オフ**
+5. 「Webhook」が **オン** になっていることを確認
 
 ## 参考
 
