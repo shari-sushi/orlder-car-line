@@ -19,6 +19,10 @@
 
 ## 4. Messaging API チャネルを作成する
 
+※2026/04時点
+> INE DevelopersコンソールからMessaging APIチャネルを直接作成することはできなくなりました。
+> Messaging APIチャネルを作成するには、以下の［LINE公式アカウントを作成する］ボタンからLINE公式アカウントを作成した後、LINE Official Account Manager上でMessaging APIの利用を有効にしてください。
+
 Messaging API チャネルを作成すると、LINE 公式アカウントが同時に開設される。
 チャネル作成時に以下の 3 つの規約・ポリシーへの同意が必要。
 

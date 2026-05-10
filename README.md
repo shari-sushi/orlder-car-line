@@ -63,10 +63,10 @@
 - [x] 仕様決め
 - [x] 技術スタック選定（フレームワーク以外）
 - [x] フレームワーク確認（Gin でいいや）
-- [ ] LINE Developers アカウント作成
-- [ ] LINE 公式アカウント作成・Messaging API 有効化
-- [ ] Channel Secret / Channel Access Token 取得
-- [ ] Go ローカルサーバー立てる
-- [ ] ngrok で Webhook 疎通確認
+- [x] LINE Developers アカウント作成
+- [x] LINE 公式アカウント作成・Messaging API 有効化
+- [x] Channel Secret / Channel Access Token 取得
+- [x] Go ローカルサーバー立てる
+- [x] ngrok で Webhook 疎通確認
 - [ ] Redis 接続実装
 - [ ] 会話フロー実装

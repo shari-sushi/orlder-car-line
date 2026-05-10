@@ -1,6 +1,6 @@
 module orlder-car-line/server
 
-go 1.22
+go 1.25
 
 require github.com/redis/go-redis/v9 v9.7.3
 

@@ -1,7 +1,10 @@
-.PHONY: ngrok-up make-db-up
+.PHONY: server-up db-up ngrok-up all-start
+
+server-up:
+	cd server && env $(grep -v '^#' .env | xargs) go run ./cmd/server
+
+all-start:
+	docker-compose up
 
 ngrok-up:
-	(cd app && npm run dev) & npx ngrok http 3000
-
-make-db-up:
-  docker-compose up
+	npx ngrok http 8080

@@ -5,6 +5,18 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes
 
+  server:
+    build: ./server
+    ports:
+      - "8080:8080"
+    env_file:
+      - path: server/.env
+        required: false
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
   app:
     build: .
     working_dir: /work/app
