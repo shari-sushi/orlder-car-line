@@ -37,6 +37,8 @@ func getClient() *linebot.Client {
 func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	log.Println("[linebot] webhook received")
 
+	// X-Line-Signature ヘッダーの値と、ChannelSecret で計算した署名が一致するか確認して安全性を担保(共有秘密鍵)
+	// HMAC-SHA256(ChannelSecret, リクエストボディ) → 署名　により、bodyが改ざんされている場合も検出する
 	cb, err := webhook.ParseRequest(config.LineChannelSecret, r)
 	if err != nil {
 		log.Printf("[linebot] ParseRequest エラー: %v", err)
@@ -49,14 +51,26 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
+	// イベントドキュメント https://developers.line.biz/ja/reference/messaging-api/#webhook-event-objects
 	for _, event := range cb.Events {
-		if e, ok := event.(webhook.MessageEvent); ok {
-			if msg, ok := e.Message.(webhook.TextMessageContent); ok {
+		switch e := event.(type) {
+		case webhook.MessageEvent:
+			switch msg := e.Message.(type) {
+			case webhook.TextMessageContent:
 				log.Printf("[linebot] テキスト受信: %s", msg.Text)
 				if err := handleMessage(ctx, e.ReplyToken, e.Source, msg.Text); err != nil {
 					log.Printf("[linebot] handleMessage エラー: %v", err)
 				}
+			case webhook.ImageMessageContent:
+			case webhook.StickerMessageContent:
 			}
+		case webhook.FollowEvent:
+		case webhook.UnfollowEvent:
+		case webhook.PostbackEvent:
+		case webhook.JoinEvent:
+		case webhook.LeaveEvent:
+		case webhook.MemberJoinedEvent:
+		case webhook.MemberLeftEvent:
 		}
 	}
 
@@ -74,7 +88,7 @@ func handleMessage(ctx context.Context, replyToken string, source webhook.Source
 	// 3行以上: 車種・年式・走行距離を一括入力
 	if len(lines) >= 3 {
 		carName := strings.TrimSpace(lines[0])
-		year := normalizeYear(strings.TrimSpace(lines[1]))
+		year := ParseYear(strings.TrimSpace(lines[1]))
 		distance := ParseDistance(strings.TrimSpace(lines[2]))
 		url := buildSearchURL(carName, year, distance)
 		return reply(replyToken, fmt.Sprintf("検索結果はこちら:\n%s", url))
@@ -82,10 +96,6 @@ func handleMessage(ctx context.Context, replyToken string, source webhook.Source
 
 	// 1行: 使い方を案内
 	return reply(replyToken, "フリーワード(車種やメーカー)\n年式\n距離\nを3行に分けて入力してください")
-}
-
-func normalizeYear(year string) string {
-	return strings.TrimSuffix(year, "年")
 }
 
 func getUserID(source webhook.SourceInterface) string {
@@ -105,18 +115,20 @@ func reply(replyToken, text string) error {
 	return err
 }
 
-func buildSearchURL(carName, year string, distance DistanceRange) string {
+func buildSearchURL(carName string, year YearRange, distance DistanceRange) string {
 	params := url.Values{}
 	params.Set("KW", carName)
-	if year != "" {
-		params.Set("YMIN", year)
-		params.Set("YMAX", year)
+	if year.Min > 0 {
+		params.Set("YMIN", fmt.Sprintf("%d", year.Min))
 	}
-	if distance.Max > 0 {
-		params.Set("SMAX", fmt.Sprintf("%d", distance.Max))
+	if year.Max > 0 {
+		params.Set("YMAX", fmt.Sprintf("%d", year.Max))
 	}
 	if distance.Min > 0 {
 		params.Set("SMIN", fmt.Sprintf("%d", distance.Min))
+	}
+	if distance.Max > 0 {
+		params.Set("SMAX", fmt.Sprintf("%d", distance.Max))
 	}
 	return "https://www.carsensor.net/usedcar/search.php?" + params.Encode()
 }

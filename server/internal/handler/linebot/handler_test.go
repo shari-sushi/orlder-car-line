@@ -14,7 +14,7 @@ func TestBuildSearchURL(t *testing.T) {
 	tests := []struct {
 		name     string
 		carName  string
-		year     string
+		year     YearRange
 		distance DistanceRange
 		wantKW   string
 		wantYMIN string
@@ -25,20 +25,36 @@ func TestBuildSearchURL(t *testing.T) {
 		{
 			name:     "車種・年式・上限距離あり",
 			carName:  "xv",
-			year:     "2020",
+			year:     ParseYear("2020"),
 			distance: ParseDistance("5000"),
 			wantKW:   "xv",
-			wantYMIN: "2020",
 			wantYMAX: "2020",
 			wantSMAX: "5000",
 		},
 		{
+			name:     "年式範囲指定",
+			carName:  "xv",
+			year:     ParseYear("2018～2020"),
+			distance: ParseDistance("5000"),
+			wantKW:   "xv",
+			wantYMIN: "2018",
+			wantYMAX: "2020",
+			wantSMAX: "5000",
+		},
+		{
+			name:     "年式下限のみ",
+			carName:  "xv",
+			year:     ParseYear("2018～"),
+			distance: DistanceRange{},
+			wantKW:   "xv",
+			wantYMIN: "2018",
+		},
+		{
 			name:     "走行距離範囲指定",
 			carName:  "フィット",
-			year:     "2019",
+			year:     ParseYear("2019"),
 			distance: ParseDistance("1万～5万"),
 			wantKW:   "フィット",
-			wantYMIN: "2019",
 			wantYMAX: "2019",
 			wantSMIN: "10000",
 			wantSMAX: "50000",
@@ -46,10 +62,9 @@ func TestBuildSearchURL(t *testing.T) {
 		{
 			name:     "走行距離なし",
 			carName:  "プリウス",
-			year:     "2021",
+			year:     ParseYear("2021"),
 			distance: DistanceRange{},
 			wantKW:   "プリウス",
-			wantYMIN: "2021",
 			wantYMAX: "2021",
 		},
 	}

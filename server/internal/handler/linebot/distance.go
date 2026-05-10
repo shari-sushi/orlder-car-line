@@ -33,9 +33,8 @@ func (d DistanceRange) String() string {
 //   - "1000～2000" / "1000~2000"     → Min=1000, Max=2000
 func ParseDistance(s string) DistanceRange {
 	s = normalizeDistance(s)
-	s = strings.ReplaceAll(s, "～", "~")
 
-	left, right, hasRange := strings.Cut(s, "~")
+	left, right, hasRange := splitRange(s)
 
 	if !hasRange {
 		return DistanceRange{Max: parseJapaneseInt(s)}
