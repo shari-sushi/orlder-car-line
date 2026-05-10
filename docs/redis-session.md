@@ -18,48 +18,51 @@ HTTP はステートレスなので「このユーザーはどこまで答えた
 
 ## データ構造
 
+Redis キー: `session:{user_id}`、TTL: 30分
+
 ```json
 {
-  "user_id": "Uxxxxxxxx",
-  "step": "waiting_year",
+  "step": "waiting_price",
   "data": {
     "car_name": "アルファード",
-    "selected_car_id": "MA_0001"
+    "year": "2020",
+    "distance_min": "0",
+    "distance_max": "50000"
   }
 }
 ```
 
-Redis キー: `session:{user_id}`、TTL: 36時間
-
 ## ステートマシン
 
 ```txt
-（初期状態 / セッションなし）
-  ↓ 車種名を入力
-waiting_car_select    クイックリプライで選択肢提示
-  ↓ ユーザーが選択
-waiting_year          年式入力待ち
-  ↓ 年式を入力
-waiting_distance      走行距離入力待ち
-  ↓ 走行距離を入力
-（完了）              Flex Message で URL 返却 → セッション削除
+[セッションなし]
+  ↓ 車種・年式・距離を3行で入力
+  → カーセンサーをスクレイピングして価格帯取得
+  → URL + 価格帯をユーザーに返信
+  → Redis にセッション保存
+
+waiting_price        価格帯の入力待ち
+  ↓ 価格帯を入力（例: 100万円〜200万円）
+  → 絞り込みURL を返信
+  → セッション削除
+
+[セッションなし に戻る]
 ```
 
-タイムアウト後にメッセージが来た場合は「最初からやり直し」メッセージを返す。
+タイムアウト（TTL切れ）後にメッセージが来た場合は「最初からやり直し」メッセージを返す。
 
 ## Go での実装イメージ
 
 ```go
 type Session struct {
-    UserID string            `json:"user_id"`
-    Step   string            `json:"step"`
-    Data   map[string]string `json:"data"`
+    Step string            `json:"step"`
+    Data map[string]string `json:"data"`
 }
 
 // 保存（TTL: 30 分）
-func SaveSession(ctx context.Context, rdb *redis.Client, s Session) error {
+func SaveSession(ctx context.Context, rdb *redis.Client, userID string, s Session) error {
     b, _ := json.Marshal(s)
-    return rdb.Set(ctx, "session:"+s.UserID, b, 30*time.Minute).Err()
+    return rdb.Set(ctx, "session:"+userID, b, 30*time.Minute).Err()
 }
 
 // 取得
@@ -76,5 +79,10 @@ func GetSession(ctx context.Context, rdb *redis.Client, userID string) (*Session
         return nil, err
     }
     return &s, nil
+}
+
+// 削除
+func DeleteSession(ctx context.Context, rdb *redis.Client, userID string) error {
+    return rdb.Del(ctx, "session:"+userID).Err()
 }
 ```

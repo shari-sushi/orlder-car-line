@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
+	"sync"
 
 	"github.com/line/line-bot-sdk-go/v8/linebot"
 	"github.com/line/line-bot-sdk-go/v8/linebot/webhook"
@@ -14,14 +16,20 @@ import (
 	"orlder-car-line/server/internal/infra/config"
 )
 
-var client *linebot.Client
+var (
+	client     *linebot.Client
+	clientOnce sync.Once
+)
 
-func init() {
-	var err error
-	client, err = linebot.New(config.LineChannelSecret, config.LineChannelAccessToken)
-	if err != nil {
-		log.Fatalf("[linebot] クライアントの初期化に失敗: %v", err)
-	}
+func getClient() *linebot.Client {
+	clientOnce.Do(func() {
+		var err error
+		client, err = linebot.New(config.LineChannelSecret, config.LineChannelAccessToken)
+		if err != nil {
+			log.Fatalf("[linebot] クライアントの初期化に失敗: %v", err)
+		}
+	})
+	return client
 }
 
 // HandleWebhook は LINE プラットフォームからの Webhook を受け取る。
@@ -73,7 +81,7 @@ func handleMessage(ctx context.Context, replyToken string, source webhook.Source
 	}
 
 	// 1行: 使い方を案内
-	return reply(replyToken, "車種・年式・走行距離を改行区切りで送ってください。\n\n例:\nアルファード\n2020\n5万km以下")
+	return reply(replyToken, "フリーワード(車種やメーカー)\n年式\n距離\nを3行に分けて入力してください")
 }
 
 func normalizeYear(year string) string {
@@ -93,13 +101,22 @@ func getUserID(source webhook.SourceInterface) string {
 }
 
 func reply(replyToken, text string) error {
-	_, err := client.ReplyMessage(replyToken, linebot.NewTextMessage(text)).Do()
+	_, err := getClient().ReplyMessage(replyToken, linebot.NewTextMessage(text)).Do()
 	return err
 }
 
 func buildSearchURL(carName, year string, distance DistanceRange) string {
-	return fmt.Sprintf(
-		"https://www.carsensor.net/usedcar/search.php?CARC=%s&MINFY=%s&MAXFY=%s&KM=%s",
-		carName, year, year, distance.String(),
-	)
+	params := url.Values{}
+	params.Set("KW", carName)
+	if year != "" {
+		params.Set("YMIN", year)
+		params.Set("YMAX", year)
+	}
+	if distance.Max > 0 {
+		params.Set("SMAX", fmt.Sprintf("%d", distance.Max))
+	}
+	if distance.Min > 0 {
+		params.Set("SMIN", fmt.Sprintf("%d", distance.Min))
+	}
+	return "https://www.carsensor.net/usedcar/search.php?" + params.Encode()
 }
