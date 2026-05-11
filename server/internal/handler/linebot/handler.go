@@ -86,13 +86,23 @@ func handleMessage(ctx context.Context, replyToken string, source webhook.Source
 	lower := strings.ToLower(strings.TrimSpace(text))
 
 	// "suv" または "国産suv" → カルーセル表示
-	if lower == "suv" || lower == "国産suv" {
+	if lower == "suv" || lower == "国産suv" || lower == "suvを探す" {
 		return replyJapanSUVCarousel(replyToken)
 	}
 
 	// "ライズ" → カーセンサー最新1台を表示
 	if lower == "ライズ" {
 		return replyLatestRaize(replyToken)
+	}
+
+	// リッチメニュー: スタッフに相談する
+	if lower == "スタッフに相談する" {
+		return reply(replyToken, "ご相談はこちらまでお気軽にどうぞ！\n（スタッフ対応は準備中です）")
+	}
+
+	// リッチメニュー: 自分で探す → 検索の使い方を案内
+	if lower == "自分で探す" {
+		return reply(replyToken, "以下の3行を入力してください:\n\n例)\nハリアー\n2020\n5万")
 	}
 
 	lines := strings.Split(strings.TrimSpace(text), "\n")

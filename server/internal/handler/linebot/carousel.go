@@ -24,7 +24,8 @@ var japanSUVs = []suvEntry{
 }
 
 func placeholderImageURL(label string) string {
-	return fmt.Sprintf("https://placehold.co/1024x768/333333/ffffff?text=%s", url.QueryEscape(label))
+	// LINE は SVG 非対応のため .png を明示する
+	return fmt.Sprintf("https://placehold.co/1024x678/333333/ffffff.png?text=%s", url.QueryEscape(label))
 }
 
 func replyJapanSUVCarousel(replyToken string) error {

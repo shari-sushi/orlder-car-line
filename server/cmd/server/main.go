@@ -15,6 +15,9 @@ func main() {
 	// LINE Bot
 	mux.HandleFunc("POST /webhook", linebot.HandleWebhook)
 
+	// リッチメニューをサーバー起動時に自動登録
+	go linebot.SetupRichMenu()
+
 	// Web API
 	mux.HandleFunc("POST /api/login", handler.HandleLogin)
 	mux.HandleFunc("POST /api/logout", handler.HandleLogout)
