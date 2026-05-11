@@ -1,0 +1,64 @@
+{
+  "domain": "carsensor.net",
+  "paths": {
+    "listing_by_condition": {
+      "pattern": "/usedcar/b{brand}/s{series}/bt{bodyType}/index.html",
+      "example": "/usedcar/bTO/s247/btX/index.html",
+      "note": "brand・series・bodyType を省略した場合は該当セグメントごと省く"
+    },
+    "search": {
+      "pattern": "/usedcar/search.php",
+      "note": "フリーワード・年式・距離などのクエリで検索"
+    },
+    "detail": {
+      "pattern": "/usedcar/detail/{carId}/index.html",
+      "example": "/usedcar/detail/AU6982617027/index.html"
+    }
+  },
+  "segment_codes": {
+    "brand": {
+      "prefix": "b",
+      "examples": {
+        "TO": "トヨタ",
+        "HO": "ホンダ",
+        "MA": "マツダ",
+        "NI": "日産",
+        "SB": "スバル",
+        "SZ": "スズキ",
+        "MI": "三菱"
+      }
+    },
+    "series": {
+      "prefix": "s",
+      "note": "CARC コードの _ 以降の S+数字部分（小文字で使用）",
+      "examples": {
+        "247": "トヨタ ライズ (TO_S247)",
+        "057": "スバル XV (SB_S057)",
+        "010": "スズキ ジムニー (SZ_S010)"
+      }
+    },
+    "body_type": {
+      "prefix": "bt",
+      "examples": {
+        "X": "クロカン・SUV"
+      }
+    }
+  },
+  "query_params": {
+    "listing": {
+      "SORT": {
+        "3": "年式降順"
+      }
+    },
+    "search": {
+      "KW": "フリーワード（車種・メーカーなど）",
+      "CARC": "車種コード（例: TO_S247）",
+      "YMIN": "年式 下限（西暦）",
+      "YMAX": "年式 上限（西暦）",
+      "SMIN": "走行距離 下限（km）",
+      "SMAX": "走行距離 上限（km）",
+      "SORT": "並び順（3=年式降順）",
+      "BT": "ボディタイプ（X=クロカン・SUV）"
+    }
+  }
+}

@@ -83,6 +83,18 @@ func handleMessage(ctx context.Context, replyToken string, source webhook.Source
 		return nil
 	}
 
+	lower := strings.ToLower(strings.TrimSpace(text))
+
+	// "suv" または "国産suv" → カルーセル表示
+	if lower == "suv" || lower == "国産suv" {
+		return replyJapanSUVCarousel(replyToken)
+	}
+
+	// "ライズ" → カーセンサー最新1台を表示
+	if lower == "ライズ" {
+		return replyLatestRaize(replyToken)
+	}
+
 	lines := strings.Split(strings.TrimSpace(text), "\n")
 
 	// 3行以上: 車種・年式・走行距離を一括入力
